@@ -5,10 +5,12 @@ import lombok.Data;
 
 @Data
 public class CreateUserRequest {
+	
 	@NotNull
 	private String email;
 	@NotNull
 	private String password;
 	@NotNull
 	private String name;
+	
 }
