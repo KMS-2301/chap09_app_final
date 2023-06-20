@@ -5,8 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class ValidateUserResponse {
-
+public class ErrorResponse {
 	private int code;
-	private String token;
+	private String cause;
+	private long timeStamp;
 }

@@ -33,13 +33,12 @@ public class UserService {
 			throw new ExistUserEmailException();
 		}
 		// 인증절차를 거쳤는지 확인
-		VerificationCode found = verificationCodeRepository
-									.findTop1ByEmailOrderByCreatedDesc(dto.getEmail())
-									.orElseThrow(()-> new VerifyCodeException());
-		if(found.getState()==null) {
+		VerificationCode found = verificationCodeRepository.findTop1ByEmailOrderByCreatedDesc(dto.getEmail())
+				.orElseThrow(() -> new VerifyCodeException());
+		if (found.getState() == null) {
 			throw new VerifyCodeException();
 		}
-		
+
 		// 회원정보 등록
 		User one = new User();
 		one.setEmail(dto.getEmail());
@@ -70,7 +69,7 @@ public class UserService {
 				.findTop1ByEmailOrderByCreatedDesc(req.getEmail());
 
 		VerificationCode found = result.orElseThrow(() -> new VerifyCodeException());
-		
+
 		long elapsed = System.currentTimeMillis() - found.getCreated().getTime();
 		if (elapsed > 1000 * 60 * 10) {
 			throw new VerifyCodeException();
@@ -82,7 +81,14 @@ public class UserService {
 		found.setState("passed");
 		verificationCodeRepository.save(found);
 	}
+
+	
+	
+	@Transactional
+	public void deleteSpecificUser(String userEmail) throws NotExistUserException {
+		var user = userRepository.findByEmail(userEmail).orElseThrow(() -> new NotExistUserException());
+
+		userRepository.delete(user);
+	}
+
 }
-
-
-

@@ -1,7 +1,5 @@
 package org.edupoll.controller;
 
-import java.util.Base64;
-
 import org.edupoll.exception.AlreadyVerifiedException;
 import org.edupoll.exception.ExistUserEmailException;
 import org.edupoll.exception.InvalidPasswordException;
@@ -13,6 +11,7 @@ import org.edupoll.model.dto.request.VerifyCodeRequest;
 import org.edupoll.model.dto.request.VerifyEmailRequest;
 import org.edupoll.model.dto.response.ValidateUserResponse;
 import org.edupoll.model.dto.response.VerifyEmailResponse;
+import org.edupoll.service.JWTService;
 import org.edupoll.service.MailService;
 import org.edupoll.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -38,6 +37,7 @@ public class UserController {
 
 	private final MailService mailService;
 	
+	private final JWTService jwtService;
 	
 	@PostMapping("/join")
 	public ResponseEntity<Void> joinUserHandle(@Valid CreateUserRequest request) 
@@ -54,12 +54,11 @@ public class UserController {
 
 		userService.validateUser(req);
 		
-		var response =
-				new ValidateUserResponse(200, Base64.getEncoder().encodeToString(req.getEmail().getBytes()));
+		String token = jwtService.createToken(req.getEmail());
 		
+		log.info("token = " + token);
 		
-		// log.info("encoded = " + encoded);
-		
+		var response = new ValidateUserResponse(200, token);
 		
 		return new ResponseEntity<>(response, HttpStatus.OK);
 	}
@@ -83,6 +82,7 @@ public class UserController {
 		
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
+	
 	
 }
 

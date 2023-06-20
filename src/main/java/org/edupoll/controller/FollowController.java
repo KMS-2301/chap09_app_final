@@ -1,7 +1,6 @@
 package org.edupoll.controller;
 
-import java.util.Base64;
-
+import org.edupoll.service.JWTService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,26 +9,26 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestController
 @RequestMapping("/api/v1/user")
+@RequiredArgsConstructor
 @Slf4j
 public class FollowController {
 	
+	private final JWTService jwtService;
 	
 	@GetMapping("/{user}/following")
 	public ResponseEntity<Void> getFlollowingList(@PathVariable String user
-			, @RequestHeader(name="secret", required = false) String secret) {
-		
-		
-		if(secret == null) {
+			, @RequestHeader(name="token") String token) {
+		if(token == null ) {
 			return  new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
+		// 토큰 검증 
+		jwtService.verifyToken(token);
 		
-		String secretUser = new String(Base64.getDecoder().decode(secret));
-		
-		log.info("user = " + user +" / secret = " + secret + " / secretUser = " + secretUser);
 		
 		return new ResponseEntity<>(HttpStatus.OK);
 	}
