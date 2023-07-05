@@ -51,6 +51,7 @@ public class MailService {
 		mailsender.send(message);
 
 		// 리포지토리에 코드값 저장
+		
 		var one = new VerificationCode();
 			one.setCode(code);
 			one.setEmail(req.getEmail());
